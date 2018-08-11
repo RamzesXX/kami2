@@ -8,6 +8,7 @@ export default class Kami2 {
     this.fieldWidth = gameField[0].length;
     this.fieldHeight = gameField.length;
     this.gameFinished = null;
+    this.fillAll = true;
   }
 
   doTurn(x, y, colorToFill) {
@@ -26,43 +27,45 @@ export default class Kami2 {
       }
 
       this.field[cell.y][cell.x] = colorToFill;
-      switch (cell.x % 4) {
-        case 0:
-          if (cell.x > 0) {
+      if (this.fillAll) {
+        switch (cell.x % 4) {
+          case 0:
+            if (cell.x > 0) {
+              cellToProcess.push({ x: cell.x - 1, y: cell.y });
+            }
+            cellToProcess.push({ x: cell.x + 1, y: cell.y });
+            if (cell.y < this.fieldHeight - 1) {
+              cellToProcess.push({ x: cell.x + 1, y: cell.y + 1 });
+            }
+            break;
+
+          case 1:
+            if (cell.y > 0) {
+              cellToProcess.push({ x: cell.x - 1, y: cell.y - 1 });
+            }
             cellToProcess.push({ x: cell.x - 1, y: cell.y });
-          }
-          cellToProcess.push({ x: cell.x + 1, y: cell.y });
-          if (cell.y < this.fieldHeight - 1) {
-            cellToProcess.push({ x: cell.x + 1, y: cell.y + 1 });
-          }
-          break;
+            if (cell.x < this.fieldWidth - 1) {
+              cellToProcess.push({ x: cell.x + 1, y: cell.y });
+            }
+            break;
 
-        case 1:
-          if (cell.y > 0) {
-            cellToProcess.push({ x: cell.x - 1, y: cell.y - 1 });
-          }
-          cellToProcess.push({ x: cell.x - 1, y: cell.y });
-          if (cell.x < this.fieldWidth - 1) {
+          case 2:
+            if (cell.y > 0) {
+              cellToProcess.push({ x: cell.x + 1, y: cell.y - 1 });
+            }
+            cellToProcess.push({ x: cell.x - 1, y: cell.y });
             cellToProcess.push({ x: cell.x + 1, y: cell.y });
-          }
-          break;
-
-        case 2:
-          if (cell.y > 0) {
-            cellToProcess.push({ x: cell.x + 1, y: cell.y - 1 });
-          }
-          cellToProcess.push({ x: cell.x - 1, y: cell.y });
-          cellToProcess.push({ x: cell.x + 1, y: cell.y });
-          break;
-        case 3:
-          cellToProcess.push({ x: cell.x - 1, y: cell.y });
-          if (cell.x < this.fieldWidth - 1) {
-            cellToProcess.push({ x: cell.x + 1, y: cell.y });
-          }
-          if (cell.y < this.fieldHeight - 1) {
-            cellToProcess.push({ x: cell.x - 1, y: cell.y + 1 });
-          }
-          break;
+            break;
+          case 3:
+            cellToProcess.push({ x: cell.x - 1, y: cell.y });
+            if (cell.x < this.fieldWidth - 1) {
+              cellToProcess.push({ x: cell.x + 1, y: cell.y });
+            }
+            if (cell.y < this.fieldHeight - 1) {
+              cellToProcess.push({ x: cell.x - 1, y: cell.y + 1 });
+            }
+            break;
+        }
       }
     }
   }

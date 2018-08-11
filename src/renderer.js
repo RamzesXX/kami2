@@ -11,6 +11,7 @@ export default class Render {
     this.fieldCanvas = fieldCanvas;
     this.paletteCanvas = paletteCanvas;
     this.onUserClickOnField = this.onUserClickOnField.bind(this);
+    this.onChangeOptions = this.onChangeOptions.bind(this);
     this.field = null;
     this.game = null;
     this.solver = null;
@@ -49,6 +50,9 @@ export default class Render {
     }
   }
 
+  onChangeOptions(e) {
+    this.game.fillAll = !this.game.fillAll;
+  }
   generateNewField(height, width) {
     var newField = [];
 

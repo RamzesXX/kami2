@@ -8,5 +8,5 @@ const field = [
 const fieldCanvas = document.getElementById("field");
 const paletteCanvas = document.getElementById("palette");
 const render = new Render(fieldCanvas, paletteCanvas);
-
+document.getElementById("fillAll").onchange = render.onChangeOptions;
 render.start(field);
