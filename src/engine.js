@@ -1,15 +1,26 @@
-function Kami2(gameField) {
-  this.field = gameField;
-  this.fieldWidth = gameField[0].length;
-  this.fieldHeight = gameField.length;
+export default class Kami2 {
+  constructor(gameField) {
+    this.newGame(gameField);
+  }
 
-  this.doTurn = function(x, y, colorToFill) {
-    var cellToProcess = [];
-    var cellColor = this.field[y][x];
+  newGame(gameField) {
+    this.field = gameField;
+    this.fieldWidth = gameField[0].length;
+    this.fieldHeight = gameField.length;
+    this.gameFinished = null;
+  }
+
+  doTurn(x, y, colorToFill) {
+    let cellToProcess = [];
+    const cellColor = this.field[y][x];
+
+    if (colorToFill === cellColor) {
+      return;
+    }
 
     cellToProcess.push({ x, y });
     while (cellToProcess.length > 0) {
-      var cell = cellToProcess.shift();
+      let cell = cellToProcess.shift();
       if (this.field[cell.y][cell.x] !== cellColor) {
         continue;
       }
@@ -54,10 +65,15 @@ function Kami2(gameField) {
           break;
       }
     }
-  };
+  }
 
-  this.isGameFinished = function() {
-    var colorToCheck = this.field[0][0];
+  isGameFinished() {
+    return (this.gameFinished =
+      this.gameFinished || this.checkIfGameFinished());
+  }
+
+  checkIfGameFinished() {
+    const colorToCheck = this.field[0][0];
 
     for (var h = 0; h < this.fieldHeight; h++) {
       for (var w = 0; w < this.fieldWidth; w++) {
@@ -68,5 +84,5 @@ function Kami2(gameField) {
     }
 
     return true;
-  };
+  }
 }

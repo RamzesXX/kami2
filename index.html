@@ -4,13 +4,21 @@
 <head>
 	<title>rectExample</title>
 	<meta charset='utf-8' />
-
+<style>
+	canvas {
+		border: 1px black solid;
+	}
+	</style>
 </head>
 
 <body>
-	<div id='field'></div>
-	<div id='palette'></div>
-	<script src="src/gameEngine.js"></script>
+	<div class="game-field">
+		 <canvas id='field'></canvas>
+	</div>
+	<div class="game-palette">
+		<canvas id='palette'></canvas>
+	</div>
+
 	<script src="src/index.js"></script>
 </body>
 
