@@ -68,6 +68,7 @@ function onClick(e) {
 }
 
 function draw() {
+  console.log("-----");
   var ctx = createCanvas();
   drawField(ctx);
 }
@@ -111,3 +112,5 @@ function drawTriangleAtPosition(ctx, x, y, color) {
   ctx.fill();
   ctx.closePath();
 }
+
+draw();
