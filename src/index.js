@@ -1,76 +1,105 @@
 var margin = 1;
 var size = 40;
 var fullSize = 2 * (size + margin);
+var selectedColor = 0;
 var colors = ["#000000", "#F9A520", "#FF6347", "#236734"];
-var field = [[0, 1, 1, 1, 0, 3], [0, 1, 2, 1, 0, 3]];
-var w = field[0].length;
-var h = field.length;
-var wPix = Math.floor(w / 2) * fullSize;
-var hPix = h * fullSize - size - 1;
+var field = [
+  [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]
+];
+var game = new Kami2(field);
+var wPix = Math.floor(game.fieldWidth / 2) * fullSize;
+var hPix = game.fieldHeight * fullSize - size - 1;
 
-function createCanvas() {
+function createPaletteCanvas() {
   var canvas = document.createElement("canvas");
-  document.getElementById("root").innerHTML = "";
-  canvas.width = wPix;
-  canvas.height = hPix;
-  canvas.onclick = onClick;
-  document.getElementById("root").appendChild(canvas);
+  document.getElementById("palette").innerHTML = "";
+  canvas.width = (size + 2 * margin) * colors.length;
+  canvas.height = size + 2 * margin;
+  canvas.onclick = onPaletteClick;
+  document.getElementById("palette").appendChild(canvas);
 
   return canvas.getContext("2d");
 }
 
-/*
-We check if dot is below the line y = kx (k = size / (2 * size) = 1/2)
-|\  |
-| \ |
-|  \|
+function onPaletteClick(e) {
+  var hitPos = {
+    x: e.clientX - 8,
+    y: e.clientY - 8
+  };
+  selectedColor = Math.floor(hitPos.x / (size + 2 * margin));
+  var paletteCtx = createPaletteCanvas();
+  drawPallette(paletteCtx);
+}
 
-|  /|
-| / |
-|/  |
-*/
-function onClick(e) {
+function drawPallette(ctx) {
+  for (var i = 0; i < colors.length; i++) {
+    var startX = i * (size + 2 * margin) + margin;
+    var startY = margin;
+    ctx.fillStyle = colors[i];
+    if (i === selectedColor) {
+      ctx.fillRect(startX, startY, size, size);
+    } else {
+      ctx.fillRect(startX, startY, size / 2, size / 2);
+    }
+  }
+}
+
+function createFieldCanvas() {
+  var canvas = document.createElement("canvas");
+  document.getElementById("field").innerHTML = "";
+  canvas.width = wPix;
+  canvas.height = hPix;
+  canvas.onclick = onFieldClick;
+  document.getElementById("field").appendChild(canvas);
+
+  return canvas.getContext("2d");
+}
+
+function onFieldClick(e) {
   //we substract 8 to adjust cursor's position
-  var rectLocalX = (e.clientX - 8) % fullSize;
-  var rectLocalY = (e.clientY - 8) % (size + margin);
-  var x = 2 * Math.floor(e.clientX / fullSize);
-  var y = Math.floor(e.clientY / (size + margin));
+  var hitPos = {
+    x: e.clientX - 8,
+    y: e.clientY - 8
+  };
+  var rectLocalX = hitPos.x % fullSize;
+  var rectLocalY = hitPos.y % (size + margin);
+  var x = Math.floor(hitPos.x / fullSize);
+  var y = Math.floor(hitPos.y / (size + margin));
+  var rectType = 2 * (x % 2) + (y % 2);
+  //we have 4 types our rectangles within odd/even row within odd/even columnn
 
-  //case - A(/)
-  if (x % 2) {
-    if (y % 2) {
+  x <<= 1;
+  y >>= 1;
+  switch (rectType) {
+    case 0:
       if (rectLocalY < rectLocalX / 2) {
         x++;
       }
-    } else {
-    }
-  } else {
-    if (y % 2) {
-      y >>= 1;
+      break;
+    case 1:
       if (rectLocalY > size - rectLocalX / 2) {
         x++;
         y++;
       }
-    } else {
-      y >>= 1;
-      if (rectLocalY < rectLocalX / 2) {
+      break;
+    case 2:
+      if (rectLocalY > size - rectLocalX / 2) {
         x++;
       }
-    }
+      break;
+    case 3:
+      if (rectLocalY < rectLocalX / 2) {
+        x++;
+      } else {
+        y++;
+      }
+      break;
   }
 
-  //
-
-  console.log(`X=${rectLocalX}, Y=${rectLocalY}`);
-  console.log(`x=${x}, y=${y}`);
-  field[y][x] = (field[y][x] + 1) % colors.length;
+  game.doTurn(x, y, selectedColor);
   draw();
-}
-
-function draw() {
-  console.log("-----");
-  var ctx = createCanvas();
-  drawField(ctx);
 }
 
 function drawField(ctx) {
@@ -111,6 +140,13 @@ function drawTriangleAtPosition(ctx, x, y, color) {
 
   ctx.fill();
   ctx.closePath();
+}
+
+function draw() {
+  var fieldCtx = createFieldCanvas();
+  var paletteCtx = createPaletteCanvas();
+  drawField(fieldCtx);
+  drawPallette(paletteCtx);
 }
 
 draw();
