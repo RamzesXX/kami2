@@ -1,4 +1,11 @@
-export const COLORS = ["#000000", "#F9A520", "#FF6347", "#236734"];
+export const COLORS = [
+  "#000000",
+  "#F9A520",
+  "#FF1347",
+  "#036783",
+  "#236734",
+  "#230034"
+];
 export const DEFAULT_COLOR = 0;
 
 export default class Palette {
