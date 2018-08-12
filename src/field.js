@@ -112,13 +112,14 @@ export default class Field {
       let vertice = graph[key];
       const x = key % this.fieldWidth;
       const y = (key - x) / this.fieldWidth;
+
+      this.drawTriangleAtPosition(x, y, vertice.color);
       vertice.adjacent.forEach(adjacentKey => {
         const adjX = adjacentKey % this.fieldWidth;
         const adjY = (adjacentKey - adjX) / this.fieldWidth;
 
         this.drawConnection({ x, y }, { x: adjX, y: adjY });
       });
-      this.drawTriangleAtPosition(x, y, vertice.color);
     });
   }
 
