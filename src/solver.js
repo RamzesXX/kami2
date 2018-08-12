@@ -65,7 +65,7 @@ export default class Solver {
   // We check all verices:
   // if it has adjacent with the same color we reconnect all adjacent verex  to it emove current
   simplifyGraph(graph) {
-    graph = { ...graph };
+    graph = Object.assign({}, graph);
     Object.keys(graph).forEach(key => {
       let vertice = graph[key];
       let acceptorId = vertice.adjacent.find(
