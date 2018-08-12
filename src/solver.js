@@ -1,7 +1,7 @@
 export default class Solver {
   constructor(field) {
     this.field = field;
-    this.graph = null;
+    this.graph = this.fieldToGraph(field);
   }
 
   fieldToGraph(field) {

@@ -1,5 +1,8 @@
 import { COLORS, DEFAULT_COLOR } from "./palete";
 
+export const GRAPH_MODE = "graph-mode";
+export const GAME_MODE = "game-mode";
+
 export default class Field {
   constructor(
     fieldCanvas,
@@ -21,10 +24,17 @@ export default class Field {
     this.context = fieldCanvas.getContext("2d");
     this.onFieldClickCallback = onFieldClickCallback;
     this.draw = this.draw.bind(this);
+    this.setViewMode = this.setViewMode.bind(this);
     this.init();
   }
 
-  init() {}
+  init() {
+    this.viewMode = GAME_MODE;
+  }
+
+  setViewMode(viewMode) {
+    this.viewMode = viewMode;
+  }
 
   onClick(e) {
     //we substract 8 to adjust cursor's position
@@ -70,7 +80,15 @@ export default class Field {
     this.onFieldClickCallback({ x, y });
   }
 
-  draw(field) {
+  draw(source) {
+    if (this.viewMode === GAME_MODE) {
+      this.drawGame(source.field);
+    } else {
+      this.drawGraph(source.graph);
+    }
+  }
+
+  drawGame(field) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     for (let y = 0; y < this.fieldHeight; y++) {
@@ -78,6 +96,15 @@ export default class Field {
         this.drawTriangleAtPosition(x, y, field[y][x]);
       }
     }
+  }
+  drawGraph(graph) {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    Object.keys(graph).forEach(key => {
+      let vertice = graph[key];
+      const x = key % this.fieldWidth;
+      const y = (key - x) / this.fieldWidth;
+      this.drawTriangleAtPosition(x, y, vertice.color);
+    });
   }
 
   drawTriangleAtPosition(x, y, color) {

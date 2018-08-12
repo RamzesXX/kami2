@@ -1,5 +1,5 @@
 import Palette, { COLORS } from "./palete";
-import Field from "./field";
+import Field, { GRAPH_MODE, GAME_MODE } from "./field";
 import Kami2 from "./engine";
 import Solver from "./solver";
 
@@ -11,7 +11,8 @@ export default class Render {
     this.fieldCanvas = fieldCanvas;
     this.paletteCanvas = paletteCanvas;
     this.onUserClickOnField = this.onUserClickOnField.bind(this);
-    this.onChangeOptions = this.onChangeOptions.bind(this);
+    this.onChangeFillOptions = this.onChangeFillOptions.bind(this);
+    this.onChangeViewOptions = this.onChangeViewOptions.bind(this);
     this.field = null;
     this.game = null;
     this.solver = null;
@@ -32,14 +33,14 @@ export default class Render {
       MARGIN,
       this.onUserClickOnField
     );
-    this.field.draw(this.game.field);
+    this.solver.simplifyGraph(this.solver.fieldToGraph(this.game.field));
+    this.field.draw({ field: this.game.field, graph: this.solver.graph });
   }
 
   onUserClickOnField(coord) {
     this.game.doTurn(coord.x, coord.y, this.palette.selectedColorIndex);
-    this.field.draw(this.game.field);
-
     this.solver.simplifyGraph(this.solver.fieldToGraph(this.game.field));
+    this.field.draw({ field: this.game.field, graph: this.solver.graph });
     if (
       this.game.isGameFinished() &&
       window.confirm("You Won!!! Would you like to play one more time?")
@@ -50,9 +51,17 @@ export default class Render {
     }
   }
 
-  onChangeOptions(e) {
+  onChangeViewOptions(e) {
+    console.log(e.target.value);
+
+    this.field.setViewMode(e.target.value ? GAME_MODE : GRAPH_MODE);
+    this.field.draw({ field: this.game.field, graph: this.solver.graph });
+  }
+
+  onChangeFillOptions(e) {
     this.game.fillAll = !this.game.fillAll;
   }
+
   generateNewField(height, width) {
     var newField = [];
 
