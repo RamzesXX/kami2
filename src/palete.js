@@ -4,7 +4,7 @@ export const COLORS = [
   "#FF1347",
   "#036783",
   "#236734",
-  "#230034"
+  "#23AA34"
 ];
 export const DEFAULT_COLOR = 0;
 
