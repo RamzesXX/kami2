@@ -65,13 +65,14 @@ export default class Solver {
   // We check all verices:
   // if it has adjacent with the same color we reconnect all adjacent verex  to it emove current
   simplifyGraph(graph) {
-    graph = graph || this.graph;
-    for (let key in Object.keys(graph)) {
+    graph = { ...graph };
+    Object.keys(graph).forEach(key => {
       let vertice = graph[key];
       let acceptorId = vertice.adjacent.find(
         verticeId => vertice.color === graph[verticeId].color
       );
 
+      vertice.adjacent = [...vertice.adjacent];
       if (acceptorId) {
         let acceptor = graph[acceptorId];
 
@@ -81,18 +82,18 @@ export default class Solver {
 
         vertice.adjacent.forEach(verticeId => {
           let verticeForUpdate = graph[verticeId];
-          if (verticeId != acceptorId) {
+          if (verticeId !== acceptorId) {
             verticeForUpdate.adjacent.push(acceptorId);
           }
 
           verticeForUpdate.adjacent = verticeForUpdate.adjacent.filter(
-            (x, i, origin) => origin.indexOf(x) === i && x != key
+            (x, i, origin) => origin.indexOf(x) === i && x !== +key
           );
         });
         delete graph[key];
       }
-    }
-    console.log(graph);
+    });
+
     return graph;
   }
 }

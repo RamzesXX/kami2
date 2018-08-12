@@ -4,7 +4,7 @@ import Kami2 from "./engine";
 import Solver from "./solver";
 
 const SIZE = 40;
-const MARGIN = 1;
+const MARGIN = 2;
 
 export default class Render {
   constructor(fieldCanvas, paletteCanvas) {
@@ -34,22 +34,21 @@ export default class Render {
       MARGIN,
       this.onUserClickOnField
     );
-    this.solver.simplifyGraph(this.solver.fieldToGraph(this.game.field));
+    this.solver.graph = this.solver.fieldToGraph(this.game.field);
+    this.solver.graph = this.solver.simplifyGraph(this.solver.graph);
     this.field.draw({ field: this.game.field, graph: this.solver.graph });
   }
 
   onUserClickOnField(coord) {
-    console.log(coord);
     this.game.doTurn(coord.x, coord.y, this.palette.selectedColorIndex);
-    this.solver.simplifyGraph(this.solver.fieldToGraph(this.game.field));
+    this.solver.graph = this.solver.fieldToGraph(this.game.field);
+    this.solver.graph = this.solver.simplifyGraph(this.solver.graph);
     this.field.draw({ field: this.game.field, graph: this.solver.graph });
     if (this.game.isGameFinished()) {
     }
   }
 
   onChangeViewOptions(e) {
-    console.log(e.target.value);
-
     this.field.setViewMode(e.target.checked ? GAME_MODE : GRAPH_MODE);
     this.field.draw({ field: this.game.field, graph: this.solver.graph });
   }

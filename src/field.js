@@ -42,10 +42,16 @@ export default class Field {
       x: Math.round(e.clientX - rect.left),
       y: Math.round(e.clientY - rect.top)
     };
-    const rectLocalX = hitPos.x % this.fullSize;
-    const rectLocalY = hitPos.y % (this.size + this.margin);
-    let x = Math.floor(hitPos.x / this.fullSize);
-    let y = Math.floor(hitPos.y / (this.size + this.margin));
+    const fieldCoord = this.convertCoordFromCanvasToField(hitPos);
+
+    this.onFieldClickCallback(fieldCoord);
+  }
+
+  convertCoordFromCanvasToField(canvasCoord) {
+    const rectLocalX = canvasCoord.x % this.fullSize;
+    const rectLocalY = canvasCoord.y % (this.size + this.margin);
+    let x = Math.floor(canvasCoord.x / this.fullSize);
+    let y = Math.floor(canvasCoord.y / (this.size + this.margin));
     const rectType = 2 * (x % 2) + (y % 2);
     //we have 4 types our rectangles within odd/even row within odd/even columnn
 
@@ -75,9 +81,11 @@ export default class Field {
           y++;
         }
         break;
+      default:
+        break;
     }
 
-    this.onFieldClickCallback({ x, y });
+    return { x, y };
   }
 
   draw(source) {
@@ -97,45 +105,66 @@ export default class Field {
       }
     }
   }
+
   drawGraph(graph) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     Object.keys(graph).forEach(key => {
       let vertice = graph[key];
       const x = key % this.fieldWidth;
       const y = (key - x) / this.fieldWidth;
+      vertice.adjacent.forEach(adjacentKey => {
+        const adjX = adjacentKey % this.fieldWidth;
+        const adjY = (adjacentKey - adjX) / this.fieldWidth;
+
+        this.drawConnection({ x, y }, { x: adjX, y: adjY });
+      });
       this.drawTriangleAtPosition(x, y, vertice.color);
     });
   }
 
-  drawTriangleAtPosition(x, y, color) {
-    let Y;
-    let X = Math.floor(x / 2) * this.fullSize;
+  convertFieldCoordToCanvas(fieldCoord) {
+    let y;
+    let x = Math.floor(fieldCoord.x / 2) * this.fullSize;
 
-    this.context.beginPath();
-    this.context.fillStyle = COLORS[color] ? COLORS[color] : DEFAULT_COLOR;
-
-    switch (x % 4) {
+    switch (fieldCoord.x % 4) {
       case 0:
       case 3:
-        Y = y * this.fullSize + 1;
+        y = fieldCoord.y * this.fullSize + 1;
         break;
       case 1:
       case 2:
-        Y = y * this.fullSize - this.size;
+        y = fieldCoord.y * this.fullSize - this.size;
+        break;
+      default:
         break;
     }
 
-    if (x % 2) {
-      this.context.moveTo(X + 2 * this.size, Y);
-      this.context.lineTo(X + 2 * this.size, Y + 2 * this.size);
-      this.context.lineTo(X, Y + this.size);
-    } else {
-      this.context.moveTo(X, Y);
-      this.context.lineTo(X, Y + 2 * this.size);
-      this.context.lineTo(X + 2 * this.size, Y + this.size);
-    }
+    return { x, y };
+  }
 
+  drawTriangleAtPosition(x, y, color) {
+    const origin = this.convertFieldCoordToCanvas({ x, y });
+    const k = x % 2;
+
+    this.context.beginPath();
+    this.context.fillStyle = COLORS[color] ? COLORS[color] : DEFAULT_COLOR;
+    this.context.moveTo(origin.x + 2 * this.size * k, origin.y);
+    this.context.lineTo(origin.x + 2 * this.size * k, origin.y + 2 * this.size);
+    this.context.lineTo(
+      origin.x + 2 * this.size * (1 - k),
+      origin.y + this.size
+    );
     this.context.fill();
     this.context.closePath();
+  }
+
+  drawConnection(from, to) {
+    const originFrom = this.convertFieldCoordToCanvas(from);
+    const originTo = this.convertFieldCoordToCanvas(to);
+
+    this.context.fillStyle = DEFAULT_COLOR;
+    this.context.moveTo(originFrom.x + this.size, originFrom.y + this.size);
+    this.context.lineTo(originTo.x + this.size, originTo.y + this.size);
+    this.context.stroke();
   }
 }
