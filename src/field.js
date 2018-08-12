@@ -37,10 +37,10 @@ export default class Field {
   }
 
   onClick(e) {
-    //we substract 8 to adjust cursor's position
+    const rect = this.canvas.getBoundingClientRect();
     const hitPos = {
-      x: e.clientX - 8,
-      y: e.clientY - 8
+      x: Math.round(e.clientX - rect.left),
+      y: Math.round(e.clientY - rect.top)
     };
     const rectLocalX = hitPos.x % this.fullSize;
     const rectLocalY = hitPos.y % (this.size + this.margin);

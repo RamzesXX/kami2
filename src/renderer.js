@@ -39,11 +39,11 @@ export default class Render {
   }
 
   onUserClickOnField(coord) {
+    console.log(coord);
     this.game.doTurn(coord.x, coord.y, this.palette.selectedColorIndex);
     this.solver.simplifyGraph(this.solver.fieldToGraph(this.game.field));
     this.field.draw({ field: this.game.field, graph: this.solver.graph });
-    if (this.game.isGameFinished() ) {
-      
+    if (this.game.isGameFinished()) {
     }
   }
 
@@ -60,7 +60,7 @@ export default class Render {
 
   onNewGame() {
     this.start(
-        this.generateNewField(this.game.fieldHeight, this.game.fieldWidth)
+      this.generateNewField(this.game.fieldHeight, this.game.fieldWidth)
     );
   }
 

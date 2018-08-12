@@ -47,9 +47,10 @@ export default class Palette {
   }
 
   onClick(e) {
-    var hitPos = {
-      x: e.clientX - 8,
-      y: e.clientY - 8
+    const rect = this.canvas.getBoundingClientRect();
+    const hitPos = {
+      x: Math.round(e.clientX - rect.left),
+      y: Math.round(e.clientY - rect.top)
     };
     this.selectedColorIndex = Math.floor(
       hitPos.x / (this.size + 2 * this.margin)
